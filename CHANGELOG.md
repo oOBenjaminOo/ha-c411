@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.6
+
+- Ajout du bouton **Ajouter à un dashboard** sur la fiche C411.
+- Sélection du tableau de bord, de la vue et de la section pour ajouter la carte avec les entités du compte.
+- L’assistant reprend les couleurs et la typographie du thème Home Assistant.
+
 ## 0.3.5
 
 - Affichage de la dernière synchronisation réussie dans les détails intégrés et dans la carte de détails séparée.
