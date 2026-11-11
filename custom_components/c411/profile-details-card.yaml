@@ -1,0 +1,62 @@
+# Cette carte utilise Mushroom.
+type: vertical-stack
+cards:
+  - type: heading
+    heading: Détails C411
+    icon: mdi:information-outline
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_zen_gagnes
+        primary: Zen gagnés
+        secondary: >-
+          {{ states(entity) if has_value(entity) else 'Indisponible' }}
+        icon: mdi:plus-circle-outline
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_zen_depenses
+        primary: Zen dépensés
+        secondary: >-
+          {{ states(entity) if has_value(entity) else 'Indisponible' }}
+        icon: mdi:minus-circle-outline
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_envoye_reel
+        primary: Envoyé hors crédits
+        secondary: >-
+          {% set bytes = state_attr(entity, 'bytes') %}
+          {% set large = bytes is number and bytes >= 1099511627776 %}
+          {{ ('%.2f' | format(bytes / (1099511627776 if large else 1073741824)) | replace('.', ',')) ~ (' To' if large else ' Go') if has_value(entity) and bytes is number else 'Indisponible' }}
+        icon: mdi:upload
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_telecharge_reel
+        primary: Téléchargé hors crédits
+        secondary: >-
+          {% set bytes = state_attr(entity, 'bytes') %}
+          {% set large = bytes is number and bytes >= 1099511627776 %}
+          {{ ('%.2f' | format(bytes / (1099511627776 if large else 1073741824)) | replace('.', ',')) ~ (' To' if large else ' Go') if has_value(entity) and bytes is number else 'Indisponible' }}
+        icon: mdi:download
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_equipe
+        primary: Équipe
+        secondary: >-
+          {{ states(entity) if has_value(entity) else 'Sans équipe' if state_attr(entity, 'no_team') == true else 'Indisponible' }}
+        icon: mdi:account-group-outline
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_quetes_terminees
+        primary: Quêtes terminées
+        secondary: >-
+          {{ states(entity) if has_value(entity) else 'Indisponible' }}
+        icon: mdi:clipboard-check-outline
+        tap_action:
+          action: more-info

@@ -99,6 +99,8 @@ class C411Sensor(C411Entity, SensorEntity):
     def extra_state_attributes(self):
         if self._key in DATA_SIZE:
             return {"bytes": self.native_value}
+        if self._key == "team":
+            return {"no_team": "team" in self.coordinator.data and self.coordinator.data["team"] is None}
         if self._key != "profile":
             return None
         profile = self.coordinator.data

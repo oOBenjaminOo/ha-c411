@@ -118,34 +118,133 @@ cards:
         total.toLocaleString('fr-FR') + ' XP</span><span>' +
         remaining.toLocaleString('fr-FR') + ' XP avant le niveau ' + next +
         '</span></div></div>'; ]]]
-      stats: >-
-        [[[
-          const format = (id, ratio = false) => {
-            const entity = states[id];
-            const value = ratio ? Number(entity?.state) : entity?.attributes?.bytes;
-            if (!Number.isFinite(value) || ['unknown', 'unavailable'].includes(entity?.state)) return '—';
-            const large = Math.abs(value) >= 1099511627776;
-            const number = ratio ? value : value / (large ? 1099511627776 : 1073741824);
-            return number.toLocaleString('fr-FR', { minimumFractionDigits: ratio ? 2 : 0, maximumFractionDigits: 2 })
-              + (ratio ? '' : large ? ' To' : ' Go');
-          };
-          const metrics = [
-            ['Marge de téléchargement', 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cdefs%3E%3CclipPath%20id%3D%22dl-fill-v-0-0-2%22%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%3E%3C%2Fpath%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.12%22%3E%3C%2Fpath%3E%3Crect%20x%3D%220%22%20y%3D%225.392423135587444%22%20width%3D%2224%22%20height%3D%2218.607576864412557%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.85%22%20clip-path%3D%22url(%23dl-fill-v-0-0-2)%22%3E%3C%2Frect%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22none%22%20stroke%3D%22%2334d399%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E', format('sensor.c411_marge_de_telechargement'), '#34d399'],
-            ['Ratio', 'mdi:swap-vertical', format('sensor.c411_ratio', true), '#34d399'],
-            ['Envoyé', 'mdi:upload', format('sensor.c411_envoye'), '#34d399'],
-            ['Téléchargé', 'mdi:download', format('sensor.c411_telecharge'), '#60a5fa']
-          ];
-          const items = metrics.map(([label, icon, value, color]) => {
-            const image = icon.startsWith('data:')
-              ? '<img src="' + icon + '" alt="" style="width:17px;height:17px">'
-              : '<ha-icon icon="' + icon + '" style="--mdc-icon-size:16px;color:' + color + '"></ha-icon>';
-            return '<span title="' + label + '" aria-label="' + label + ' : ' + value
-              + '" style="display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap">'
-              + image + '<span>' + value + '</span></span>';
-          });
-          return '<div style="display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:4px;padding:6px 0;font-size:clamp(10px,2.7cqw,13px);font-weight:600;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--divider-color)">'
-            + items.join('') + '</div>';
-        ]]]
+      stats:
+        card:
+          type: grid
+          columns: 4
+          square: false
+          cards:
+            - type: custom:button-card
+              entity: sensor.c411_marge_de_telechargement
+              layout: icon_name
+              show_entity_picture: true
+              entity_picture: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cdefs%3E%3CclipPath%20id%3D%22dl-fill-v-0-0-2%22%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%3E%3C%2Fpath%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.12%22%3E%3C%2Fpath%3E%3Crect%20x%3D%220%22%20y%3D%225.392423135587444%22%20width%3D%2224%22%20height%3D%2218.607576864412557%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.85%22%20clip-path%3D%22url(%23dl-fill-v-0-0-2)%22%3E%3C%2Frect%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22none%22%20stroke%3D%22%2334d399%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E
+              tooltip: Marge de téléchargement
+              name: >-
+                [[[[ const value = entity?.attributes?.bytes;
+                if (!Number.isFinite(value) || ['unknown', 'unavailable'].includes(entity?.state)) return '—';
+                const large = Math.abs(value) >= 1099511627776; return (value / (large ? 1099511627776 : 1073741824)).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + (large ? ' To' : ' Go'); ]]]]
+              tap_action:
+                action: more-info
+              styles:
+                card:
+                  - padding: 5px 1px
+                  - border: 0
+                  - background: none
+                  - box-shadow: none
+                grid:
+                  - grid-template-columns: 16px auto
+                  - column-gap: 3px
+                  - justify-content: center
+                icon:
+                  - color: '#34d399'
+                  - width: 15px
+                entity_picture:
+                  - width: 16px
+                name:
+                  - font-size: 11px
+                  - font-weight: 600
+                  - white-space: nowrap
+            - type: custom:button-card
+              entity: sensor.c411_ratio
+              layout: icon_name
+              icon: mdi:swap-vertical
+              tooltip: Ratio
+              name: >-
+                [[[[ const value = Number(entity?.state);
+                if (!Number.isFinite(value) || ['unknown', 'unavailable'].includes(entity?.state)) return '—';
+                return value.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); ]]]]
+              tap_action:
+                action: more-info
+              styles:
+                card:
+                  - padding: 5px 1px
+                  - border: 0
+                  - background: none
+                  - box-shadow: none
+                grid:
+                  - grid-template-columns: 16px auto
+                  - column-gap: 3px
+                  - justify-content: center
+                icon:
+                  - color: '#34d399'
+                  - width: 15px
+                entity_picture:
+                  - width: 16px
+                name:
+                  - font-size: 11px
+                  - font-weight: 600
+                  - white-space: nowrap
+            - type: custom:button-card
+              entity: sensor.c411_envoye
+              layout: icon_name
+              icon: mdi:upload
+              tooltip: Envoyé
+              name: >-
+                [[[[ const value = entity?.attributes?.bytes;
+                if (!Number.isFinite(value) || ['unknown', 'unavailable'].includes(entity?.state)) return '—';
+                const large = Math.abs(value) >= 1099511627776; return (value / (large ? 1099511627776 : 1073741824)).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + (large ? ' To' : ' Go'); ]]]]
+              tap_action:
+                action: more-info
+              styles:
+                card:
+                  - padding: 5px 1px
+                  - border: 0
+                  - background: none
+                  - box-shadow: none
+                grid:
+                  - grid-template-columns: 16px auto
+                  - column-gap: 3px
+                  - justify-content: center
+                icon:
+                  - color: '#34d399'
+                  - width: 15px
+                entity_picture:
+                  - width: 16px
+                name:
+                  - font-size: 11px
+                  - font-weight: 600
+                  - white-space: nowrap
+            - type: custom:button-card
+              entity: sensor.c411_telecharge
+              layout: icon_name
+              icon: mdi:download
+              tooltip: Téléchargé
+              name: >-
+                [[[[ const value = entity?.attributes?.bytes;
+                if (!Number.isFinite(value) || ['unknown', 'unavailable'].includes(entity?.state)) return '—';
+                const large = Math.abs(value) >= 1099511627776; return (value / (large ? 1099511627776 : 1073741824)).toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + (large ? ' To' : ' Go'); ]]]]
+              tap_action:
+                action: more-info
+              styles:
+                card:
+                  - padding: 5px 1px
+                  - border: 0
+                  - background: none
+                  - box-shadow: none
+                grid:
+                  - grid-template-columns: 16px auto
+                  - column-gap: 3px
+                  - justify-content: center
+                icon:
+                  - color: '#60a5fa'
+                  - width: 15px
+                entity_picture:
+                  - width: 16px
+                name:
+                  - font-size: 11px
+                  - font-weight: 600
+                  - white-space: nowrap
       alertes: >-
         [[[
           const badge = (icon, label, state, color) => `

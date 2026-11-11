@@ -24,6 +24,14 @@ CARD_ENTITIES = {
     "silverleech": "silverleech",
     "telechargement_autorise": "download_allowed",
 }
+DETAIL_ENTITIES = {
+    "zen_gagnes": "zen_earned",
+    "zen_depenses": "zen_spent",
+    "envoye_reel": "uploaded_actual",
+    "telecharge_reel": "downloaded_actual",
+    "equipe": "team",
+    "quetes_terminees": "quests_completed",
+}
 PLACEHOLDER = re.compile(r"\b(?:binary_)?sensor\.c411_([a-z_]+)\b")
 
 
@@ -36,14 +44,21 @@ def async_register_dashboard_action(hass: HomeAssistant) -> None:
         ids = {
             entry.unique_id.partition("_")[2]: entry.entity_id
             for entry in entries
-            if entry.platform == DOMAIN and entry.domain in {"sensor", "binary_sensor"} and not entry.disabled
+            if entry.platform == DOMAIN and entry.domain in {"sensor", "binary_sensor"}
         }
-        missing = sorted(set(CARD_ENTITIES.values()) - ids.keys())
+        enabled = {entry.entity_id for entry in entries if not entry.disabled}
+        missing = sorted(key for key in CARD_ENTITIES.values() if ids.get(key) not in enabled)
         if missing:
             raise HomeAssistantError(f"C411 card sensors missing or disabled: {', '.join(missing)}")
         template = await hass.async_add_executor_job(TEMPLATE.read_text, "utf-8")
         yaml = PLACEHOLDER.sub(lambda match: ids[CARD_ENTITIES[match[1]]], template)
-        return {"yaml": yaml}
+        details = await hass.async_add_executor_job(
+            TEMPLATE.with_name("profile-details-card.yaml").read_text, "utf-8"
+        )
+        details_yaml = PLACEHOLDER.sub(
+            lambda match: ids.get(DETAIL_ENTITIES[match[1]], match[0]), details
+        )
+        return {"yaml": yaml, "details_yaml": details_yaml}
 
     hass.services.async_register(
         DOMAIN,

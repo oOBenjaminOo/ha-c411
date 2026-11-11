@@ -44,3 +44,5 @@ La [carte native](examples/native-card.yaml) utilise uniquement les cartes Markd
 L’[exemple d’automatisation](examples/profile-alerts.yaml) crée une notification persistante au début d’un Freeleech ou quand C411 retire l’autorisation de télécharger. Adaptez les deux identifiants avant de l’activer.
 
 La [carte de détails facultative](examples/profile-details-card.yaml) présente les Zen gagnés et dépensés, les volumes hors crédits, l’équipe et les quêtes terminées. Adaptez ses identifiants à ceux de votre service C411.
+
+L’action `c411.generate_card` renvoie la carte principale dans `yaml` et la carte de détails dans `details_yaml`. Les deux cartes utilisent les identifiants du service choisi.
