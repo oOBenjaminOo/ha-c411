@@ -36,6 +36,10 @@ cards:
       - sensor.c411_zen
       - sensor.c411_niveau
       - sensor.c411_rang
+      - sensor.c411_marge_de_telechargement
+      - sensor.c411_ratio
+      - sensor.c411_envoye
+      - sensor.c411_telecharge
       - binary_sensor.c411_freeleech
       - binary_sensor.c411_silverleech
       - binary_sensor.c411_telechargement_autorise
@@ -83,6 +87,7 @@ cards:
           - width: 100%
           - text-align: left
         stats:
+          - container-type: inline-size
           - width: 100%
           - min-width: 0
         alertes:
@@ -113,65 +118,34 @@ cards:
         total.toLocaleString('fr-FR') + ' XP</span><span>' +
         remaining.toLocaleString('fr-FR') + ' XP avant le niveau ' + next +
         '</span></div></div>'; ]]]
-      stats:
-        card:
-          type: grid
-          columns: 2
-          square: false
-          cards:
-            - type: custom:mushroom-template-card
-              entity: sensor.c411_marge_de_telechargement
-              primary: Marge de DL
-              secondary: >-
-                {% set bytes = state_attr(entity, 'bytes') %}
-                {% set unit = 'To' if bytes is number and bytes | abs >= 1099511627776 else 'Go' %}
-                {% set divisor = 1099511627776 if unit == 'To' else 1073741824 %}
-                {{ ('%.2f' | format(bytes / divisor) | replace('.', ',')) ~ ' ' ~ unit
-                   if has_value(entity) and bytes is number else 'Indisponible' }}
-              picture: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cdefs%3E%3CclipPath%20id%3D%22dl-fill-v-0-0-2%22%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%3E%3C%2Fpath%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.12%22%3E%3C%2Fpath%3E%3Crect%20x%3D%220%22%20y%3D%225.392423135587444%22%20width%3D%2224%22%20height%3D%2218.607576864412557%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.85%22%20clip-path%3D%22url(%23dl-fill-v-0-0-2)%22%3E%3C%2Frect%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22none%22%20stroke%3D%22%2334d399%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E
-              color: >-
-                {% set bytes = state_attr(entity, 'bytes') %}
-                {{ 'grey' if not has_value(entity) or bytes is not number else
-                   'red' if bytes <= 0 else 'amber' if bytes < 10737418240 else 'green' }}
-              tap_action:
-                action: more-info
-            - type: custom:mushroom-template-card
-              entity: sensor.c411_ratio
-              primary: Ratio
-              secondary: >-
-                {{ ('%.2f' | format(states(entity) | float) | replace('.', ','))
-                   if has_value(entity) else 'Indisponible' }}
-              icon: mdi:swap-vertical
-              color: >-
-                {{ 'grey' if not has_value(entity) else 'red' if states(entity) | float < 0.8 else 'green' }}
-              tap_action:
-                action: more-info
-            - type: custom:mushroom-template-card
-              entity: sensor.c411_envoye
-              primary: Envoyé
-              secondary: >-
-                {% set bytes = state_attr(entity, 'bytes') %}
-                {% set unit = 'To' if bytes is number and bytes >= 1099511627776 else 'Go' %}
-                {% set divisor = 1099511627776 if unit == 'To' else 1073741824 %}
-                {{ ('%.2f' | format(bytes / divisor) | replace('.', ',')) ~ ' ' ~ unit
-                   if has_value(entity) and bytes is number else 'Indisponible' }}
-              icon: mdi:upload
-              color: green
-              tap_action:
-                action: more-info
-            - type: custom:mushroom-template-card
-              entity: sensor.c411_telecharge
-              primary: Téléchargé
-              secondary: >-
-                {% set bytes = state_attr(entity, 'bytes') %}
-                {% set unit = 'To' if bytes is number and bytes >= 1099511627776 else 'Go' %}
-                {% set divisor = 1099511627776 if unit == 'To' else 1073741824 %}
-                {{ ('%.2f' | format(bytes / divisor) | replace('.', ',')) ~ ' ' ~ unit
-                   if has_value(entity) and bytes is number else 'Indisponible' }}
-              icon: mdi:download
-              color: blue
-              tap_action:
-                action: more-info
+      stats: >-
+        [[[
+          const format = (id, ratio = false) => {
+            const entity = states[id];
+            const value = ratio ? Number(entity?.state) : entity?.attributes?.bytes;
+            if (!Number.isFinite(value) || ['unknown', 'unavailable'].includes(entity?.state)) return '—';
+            const large = Math.abs(value) >= 1099511627776;
+            const number = ratio ? value : value / (large ? 1099511627776 : 1073741824);
+            return number.toLocaleString('fr-FR', { minimumFractionDigits: ratio ? 2 : 0, maximumFractionDigits: 2 })
+              + (ratio ? '' : large ? ' To' : ' Go');
+          };
+          const metrics = [
+            ['Marge de téléchargement', 'data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cdefs%3E%3CclipPath%20id%3D%22dl-fill-v-0-0-2%22%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%3E%3C%2Fpath%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.12%22%3E%3C%2Fpath%3E%3Crect%20x%3D%220%22%20y%3D%225.392423135587444%22%20width%3D%2224%22%20height%3D%2218.607576864412557%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.85%22%20clip-path%3D%22url(%23dl-fill-v-0-0-2)%22%3E%3C%2Frect%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22none%22%20stroke%3D%22%2334d399%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E', format('sensor.c411_marge_de_telechargement'), '#34d399'],
+            ['Ratio', 'mdi:swap-vertical', format('sensor.c411_ratio', true), '#34d399'],
+            ['Envoyé', 'mdi:upload', format('sensor.c411_envoye'), '#34d399'],
+            ['Téléchargé', 'mdi:download', format('sensor.c411_telecharge'), '#60a5fa']
+          ];
+          const items = metrics.map(([label, icon, value, color]) => {
+            const image = icon.startsWith('data:')
+              ? '<img src="' + icon + '" alt="" style="width:17px;height:17px">'
+              : '<ha-icon icon="' + icon + '" style="--mdc-icon-size:16px;color:' + color + '"></ha-icon>';
+            return '<span title="' + label + '" aria-label="' + label + ' : ' + value
+              + '" style="display:inline-flex;align-items:center;justify-content:center;gap:4px;white-space:nowrap">'
+              + image + '<span>' + value + '</span></span>';
+          });
+          return '<div style="display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:4px;padding:6px 0;font-size:clamp(10px,2.7cqw,13px);font-weight:600;font-variant-numeric:tabular-nums;border-bottom:1px solid var(--divider-color)">'
+            + items.join('') + '</div>';
+        ]]]
       alertes: >-
         [[[
           const badge = (icon, label, state, color) => `
