@@ -206,14 +206,16 @@ async function mount() {
   if (checkedDevice?.id !== deviceId || !checkedDevice.allowed ||
       currentPage !== page || location.pathname.match(devicePath)?.[1] !== deviceId ||
       root.querySelector("#c411-add-dashboard")) return;
-  const container = root.querySelector("ha-card");
+  const sensors = [...root.querySelectorAll("ha-device-entities-card")].find(card =>
+    card.entities?.some(entity => entity.entity_id.startsWith("sensor.")));
+  const container = sensors?.parentElement;
   if (!container) return;
   const button = document.createElement("ha-button");
   button.id = "c411-add-dashboard";
   button.style.margin = "12px 16px";
   button.textContent = "Ajouter à un dashboard";
   button.onclick = () => openWizard(hass, deviceId, button);
-  container.append(button);
+  sensors.after(button);
 }
 
 setInterval(mount, 750);
