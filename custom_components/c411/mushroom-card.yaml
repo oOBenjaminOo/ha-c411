@@ -36,9 +36,6 @@ cards:
       - sensor.c411_zen
       - sensor.c411_niveau
       - sensor.c411_rang
-      - binary_sensor.c411_freeleech
-      - binary_sensor.c411_silverleech
-      - binary_sensor.c411_telechargement_autorise
     name: >-
       [[[ return entity && !['unknown','unavailable'].includes(entity.state) ?
       entity.state : 'Profil indisponible'; ]]]
@@ -53,10 +50,9 @@ cards:
         - padding: 10px 12px
       grid:
         - grid-template-areas: >-
-            "i n zen ." "i l l l" "xp xp xp xp" "alertes alertes alertes
-            alertes"
+            "i n zen ." "i l l l" "xp xp xp xp"
         - grid-template-columns: 40px auto auto 1fr
-        - grid-template-rows: min-content min-content auto auto
+        - grid-template-rows: min-content min-content auto
         - column-gap: 12px
         - row-gap: 3px
       img_cell:
@@ -81,9 +77,6 @@ cards:
           - font-size: 14px
           - font-weight: 600
         xp:
-          - width: 100%
-          - text-align: left
-        alertes:
           - width: 100%
           - text-align: left
     custom_fields:
@@ -111,27 +104,6 @@ cards:
         total.toLocaleString('fr-FR') + ' XP</span><span>' +
         remaining.toLocaleString('fr-FR') + ' XP avant le niveau ' + next +
         '</span></div></div>'; ]]]
-      alertes: >-
-        [[[
-          const badge = (icon, label, state, color) => `
-            <span title="${label} : ${state}" style="display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid currentColor;border-radius:12px;color:${color};font-size:11px;font-weight:600">
-              <ha-icon icon="${icon}" style="--mdc-icon-size:14px"></ha-icon>
-              <span>${label} · ${state}</span>
-            </span>`;
-          const muted = 'var(--secondary-text-color)';
-          const status = (id, icon, label, color) => {
-            const value = states[id]?.state;
-            return badge(icon, label, value === 'on' ? 'actif' : value === 'off' ? 'inactif' : 'indisponible',
-              value === 'on' ? color : muted);
-          };
-          const download = states['binary_sensor.c411_telechargement_autorise']?.state;
-          const badges = [
-            status('binary_sensor.c411_freeleech', 'mdi:lightning-bolt', 'Freeleech', '#f87171'),
-            status('binary_sensor.c411_silverleech', 'mdi:lightning-bolt', 'SilverLeech', '#22d3ee')
-          ];
-          if (download === 'off') badges.push(badge('mdi:download-off-outline', 'Téléchargement', 'bloqué', '#f87171'));
-          return `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">${badges.join('')}</div>`;
-        ]]]
   - type: grid
     columns: 2
     square: false
@@ -163,10 +135,6 @@ cards:
           {{ 'grey' if not has_value(entity) else 'red' if states(entity) | float < 0.8 else 'green' }}
         tap_action:
           action: more-info
-  - type: grid
-    columns: 2
-    square: false
-    cards:
       - type: custom:mushroom-template-card
         entity: sensor.c411_envoye
         primary: Envoyé
@@ -193,3 +161,42 @@ cards:
         color: blue
         tap_action:
           action: more-info
+  - type: custom:button-card
+    show_icon: false
+    show_name: false
+    tap_action:
+      action: none
+    triggers_update:
+      - binary_sensor.c411_freeleech
+      - binary_sensor.c411_silverleech
+      - binary_sensor.c411_telechargement_autorise
+    styles:
+      card:
+        - padding: 8px 12px
+      grid:
+        - grid-template-areas: '"alertes"'
+      custom_fields:
+        alertes:
+          - justify-self: start
+    custom_fields:
+      alertes: >-
+        [[[
+          const badge = (icon, label, state, color) => `
+            <span title="${label} : ${state}" style="display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid currentColor;border-radius:12px;color:${color};font-size:11px;font-weight:600">
+              <ha-icon icon="${icon}" style="--mdc-icon-size:14px"></ha-icon>
+              <span>${label} · ${state}</span>
+            </span>`;
+          const muted = 'var(--secondary-text-color)';
+          const status = (id, icon, label, color) => {
+            const value = states[id]?.state;
+            return badge(icon, label, value === 'on' ? 'actif' : value === 'off' ? 'inactif' : 'indisponible',
+              value === 'on' ? color : muted);
+          };
+          const download = states['binary_sensor.c411_telechargement_autorise']?.state;
+          const badges = [
+            status('binary_sensor.c411_freeleech', 'mdi:lightning-bolt', 'Freeleech', '#f87171'),
+            status('binary_sensor.c411_silverleech', 'mdi:lightning-bolt', 'SilverLeech', '#22d3ee')
+          ];
+          if (download === 'off') badges.push(badge('mdi:download-off-outline', 'Téléchargement', 'bloqué', '#f87171'));
+          return `<div style="display:flex;flex-wrap:wrap;gap:6px;">${badges.join('')}</div>`;
+        ]]]
