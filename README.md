@@ -30,3 +30,9 @@ Le ratio utilise les volumes comptabilisés par C411, crédits compris. Il est i
 - Les compteurs supplémentaires exposent les XP totaux et restants, les Zen gagnés et dépensés, les volumes réellement transférés hors crédits, l’équipe et les quêtes terminées. Les champs absents ne sont pas interprétés comme des zéros.
 
 Les identifiants de la carte sont des exemples. Home Assistant peut inclure le nom du service et celui de la zone dans les identifiants, comme dans `sensor.systeme_c411_mon_pseudo_ratio`.
+
+## Générer la carte pour son compte
+
+Dans **Outils de développement → Actions**, exécutez `c411.generate_card` et sélectionnez votre service C411. Copiez le contenu du champ `yaml` de la réponse dans une carte **Manuel**. La génération utilise les identifiants actuellement enregistrés, y compris après un renommage. Les ressources Mushroom et Button Card restent nécessaires.
+
+Le capteur de diagnostic **Dernière synchronisation réussie** donne l'heure de la dernière lecture du profil acceptée. Il devient indisponible en cas d'échec, avec la dernière lecture réussie consultable dans son historique.

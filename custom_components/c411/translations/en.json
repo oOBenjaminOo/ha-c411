@@ -17,7 +17,9 @@
     "error": {
       "invalid_auth": "Invalid API key.",
       "missing_scope": "The API key needs the Profile (read) permission.",
-      "cannot_connect": "Could not read the C411 profile. Try again in a minute."
+      "cannot_connect": "Could not read the C411 profile. Try again in a minute.",
+      "unexpected_response": "C411 returned an unexpected response.",
+      "rate_limited": "C411 rate limit reached. Try again in a minute."
     },
     "abort": {
       "already_configured": "This profile is already configured.",
@@ -74,6 +76,9 @@
       },
       "quests_completed": {
         "name": "Completed quests"
+      },
+      "last_sync": {
+        "name": "Last successful sync"
       }
     },
     "binary_sensor": {

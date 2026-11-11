@@ -1,13 +1,21 @@
 """Read the authenticated C411 profile."""
 
 
-from aiohttp import ClientError, ClientSession, ClientTimeout
+from aiohttp import ClientError, ClientSession, ClientTimeout, ContentTypeError
 
 URL = "https://c411.org/api/user/profile"
 
 
 class ProfileError(Exception):
     """The profile could not be retrieved."""
+
+
+class UnexpectedResponse(ProfileError):
+    """The API returned an unsupported response."""
+
+
+class RateLimited(ProfileError):
+    """C411 asked the client to slow down."""
 
 
 class InvalidKey(ProfileError):
@@ -31,11 +39,17 @@ async def fetch_profile(session: ClientSession, key: str) -> dict:
                 raise InvalidKey("C411 rejected the API key")
             if response.status == 403:
                 raise MissingScope("C411 requires profile:read")
+            if response.status == 429:
+                raise RateLimited("C411 rate limit reached")
+            if 300 <= response.status < 400:
+                raise UnexpectedResponse("C411 returned an unexpected redirect")
             if response.status != 200:
                 raise ProfileError(f"C411 returned HTTP {response.status}")
             profile = await response.json()
-    except (ClientError, TimeoutError, ValueError):
-        raise ProfileError("Could not read the C411 profile") from None
+    except (ContentTypeError, ValueError):
+        raise UnexpectedResponse("C411 did not return a JSON profile") from None
+    except (ClientError, TimeoutError):
+        raise ProfileError("C411 API could not be reached") from None
 
     if (
         not isinstance(profile, dict)
@@ -43,5 +57,5 @@ async def fetch_profile(session: ClientSession, key: str) -> dict:
         or not isinstance(profile.get("username"), str)
         or not profile["username"].strip()
     ):
-        raise ProfileError("C411 returned an invalid profile")
+        raise UnexpectedResponse("C411 returned an invalid profile")
     return profile

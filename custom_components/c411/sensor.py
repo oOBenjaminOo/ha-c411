@@ -3,13 +3,14 @@
 from urllib.parse import urljoin, urlsplit
 
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass
-from homeassistant.const import UnitOfInformation
+from homeassistant.const import EntityCategory, UnitOfInformation
 
 from .entity import C411Entity, value_at
 
 DATA_SIZE = {"uploaded", "downloaded", "margin", "uploaded_actual", "downloaded_actual"}
 
 METRICS = {
+    "last_sync": ("derniere_synchronisation", ("_last_success",)),
     "profile": ("utilisateur", ("username",)),
     "level": ("niveau", ("level", "level")),
     "rank": ("rang", ("class", "slug")),
@@ -48,7 +49,10 @@ class C411Sensor(C411Entity, SensorEntity):
             self._attr_device_class = SensorDeviceClass.DATA_SIZE
             self._attr_native_unit_of_measurement = UnitOfInformation.BYTES
             self._attr_suggested_unit_of_measurement = UnitOfInformation.GIBIBYTES
-        if key not in {"profile", "rank", "team"}:
+        if key == "last_sync":
+            self._attr_device_class = SensorDeviceClass.TIMESTAMP
+            self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        if key not in {"profile", "rank", "team", "last_sync"}:
             self._attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
@@ -74,6 +78,8 @@ class C411Sensor(C411Entity, SensorEntity):
             # C411's minimum ratio is 0.8. Keep negative margin visible.
             return sent * 5 // 4 - received
         value = value_at(profile, *self._path)
+        if self._key == "last_sync":
+            return value
         if self._key in {"profile", "team"}:
             return value if isinstance(value, str) and value else None
         return value if type(value) is int else None

@@ -8,7 +8,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import TextSelector, TextSelectorConfig, TextSelectorType
 
 from . import DOMAIN
-from .api import InvalidKey, MissingScope, ProfileError, fetch_profile
+from .api import InvalidKey, MissingScope, ProfileError, RateLimited, UnexpectedResponse, fetch_profile
 
 SCHEMA = vol.Schema(
     {vol.Required(CONF_API_KEY): TextSelector(TextSelectorConfig(type=TextSelectorType.PASSWORD))}
@@ -41,6 +41,10 @@ class C411ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "missing_scope"
             except InvalidKey:
                 errors["base"] = "invalid_auth"
+            except RateLimited:
+                errors["base"] = "rate_limited"
+            except UnexpectedResponse:
+                errors["base"] = "unexpected_response"
             except ProfileError:
                 errors["base"] = "cannot_connect"
             else:

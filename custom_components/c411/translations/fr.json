@@ -17,7 +17,9 @@
     "error": {
       "invalid_auth": "Clé API refusée.",
       "missing_scope": "La clé doit avoir la permission Profil (lecture).",
-      "cannot_connect": "Impossible de lire le profil C411. Réessayez dans une minute."
+      "cannot_connect": "Impossible de lire le profil C411. Réessayez dans une minute.",
+      "unexpected_response": "C411 a renvoyé une réponse inattendue.",
+      "rate_limited": "Limite de requêtes C411 atteinte. Réessayez dans une minute."
     },
     "abort": {
       "already_configured": "Ce profil est déjà configuré.",
@@ -74,6 +76,9 @@
       },
       "quests_completed": {
         "name": "Quêtes terminées"
+      },
+      "last_sync": {
+        "name": "Dernière synchronisation réussie"
       }
     },
     "binary_sensor": {

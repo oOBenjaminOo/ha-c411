@@ -8,12 +8,20 @@ from homeassistant.const import CONF_API_KEY, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryAuthFailed
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.util import dt as dt_util
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import InvalidKey, ProfileError, fetch_profile
+from .dashboard import async_register_dashboard_action
 
 DOMAIN = "c411"
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
+
+
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Register the dashboard action."""
+    async_register_dashboard_action(hass)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -22,11 +30,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def update_profile():
         try:
-            return await fetch_profile(session, entry.data[CONF_API_KEY])
+            profile = await fetch_profile(session, entry.data[CONF_API_KEY])
         except InvalidKey as err:
             raise ConfigEntryAuthFailed(str(err)) from err
         except ProfileError as err:
             raise UpdateFailed(str(err)) from err
+
+        return {**profile, "_last_success": dt_util.utcnow()}
 
     coordinator = DataUpdateCoordinator(
         hass,

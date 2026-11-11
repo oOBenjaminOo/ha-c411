@@ -1,0 +1,11 @@
+generate_card:
+  name: Generate C411 dashboard card
+  description: Return Lovelace YAML for the selected C411 account.
+  fields:
+    device_id:
+      name: C411 service
+      required: true
+      selector:
+        device:
+          filter:
+            - integration: c411
