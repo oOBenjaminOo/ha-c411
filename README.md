@@ -33,6 +33,12 @@ Installez **Mushroom** et **Button Card** via HACS. Dans votre tableau de bord, 
 
 Les volumes sont affichés en Go ou en To selon leur taille, avec des conversions binaires. Les entités restent utilisables dans les cartes natives de Home Assistant.
 
+### Aperçu avec un profil fictif
+
+| Détails repliés | Détails ouverts |
+| --- | --- |
+| ![Carte C411 avec les détails repliés](docs/images/c411-demo-replie.png) | ![Carte C411 avec les détails ouverts](docs/images/c411-demo-ouvert.png) |
+
 ## Données
 
 Le ratio utilise les volumes comptabilisés par C411, crédits compris. Il est indéterminé lorsque le total téléchargé est nul. La marge est estimée avec un seuil de ratio de 0,8. Les statuts Freeleech et téléchargement proviennent directement de l’API.
