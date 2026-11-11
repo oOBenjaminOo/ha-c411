@@ -1,0 +1,23 @@
+# Exemple à coller dans l'éditeur YAML d'une automatisation.
+# Remplacez les deux identifiants par ceux de votre service C411.
+alias: C411 - Alertes profil
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.c411_freeleech
+    from: "off"
+    to: "on"
+    id: freeleech
+  - trigger: state
+    entity_id: binary_sensor.c411_telechargement_autorise
+    from: "on"
+    to: "off"
+    id: download_blocked
+actions:
+  - action: persistent_notification.create
+    data:
+      title: C411
+      message: >-
+        {{ 'Une période de Freeleech a commencé.'
+           if trigger.id == 'freeleech'
+           else 'C411 a désactivé le téléchargement pour ce compte.' }}
+mode: queued

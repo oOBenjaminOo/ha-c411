@@ -36,3 +36,9 @@ Les identifiants de la carte sont des exemples. Home Assistant peut inclure le n
 Dans **Outils de développement → Actions**, exécutez `c411.generate_card` et sélectionnez votre service C411. Copiez le contenu du champ `yaml` de la réponse dans une carte **Manuel**. La génération utilise les identifiants actuellement enregistrés, y compris après un renommage. Les ressources Mushroom et Button Card restent nécessaires.
 
 Le capteur de diagnostic **Dernière synchronisation réussie** donne l'heure de la dernière lecture du profil acceptée. Il devient indisponible en cas d'échec, avec la dernière lecture réussie consultable dans son historique.
+
+## Carte native et alertes
+
+La [carte native](examples/native-card.yaml) utilise uniquement les cartes Markdown et Entités de Home Assistant. Collez son YAML dans une carte **Manuel** et remplacez les identifiants par ceux de votre service C411.
+
+L’[exemple d’automatisation](examples/profile-alerts.yaml) crée une notification persistante au début d’un Freeleech ou quand C411 retire l’autorisation de télécharger. Adaptez les deux identifiants avant de l’activer.

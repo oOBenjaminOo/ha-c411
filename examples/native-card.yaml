@@ -1,0 +1,30 @@
+# Remplacez les identifiants par ceux de votre service C411.
+type: vertical-stack
+cards:
+  - type: markdown
+    title: C411
+    content: >-
+      {% set user = 'sensor.c411_utilisateur' %}
+      {% set level = state_attr(user, 'level') %}
+      {% if has_value(user) %}
+      **{{ states(user) }}** · Niveau {{ states('sensor.c411_niveau') }}
+      · {{ states('sensor.c411_zen') }} Zen
+
+      {{ states('sensor.c411_rang') }}
+
+      {% if level is mapping and level.xpToNextLevel is number %}
+      {{ level.xpToNextLevel }} XP avant le prochain niveau
+      {% endif %}
+      {% else %}
+      Profil indisponible
+      {% endif %}
+  - type: entities
+    show_header_toggle: false
+    entities:
+      - entity: sensor.c411_ratio
+      - entity: sensor.c411_marge_de_telechargement
+      - entity: sensor.c411_envoye
+      - entity: sensor.c411_telecharge
+      - entity: binary_sensor.c411_freeleech
+      - entity: binary_sensor.c411_telechargement_autorise
+      - entity: sensor.c411_derniere_synchronisation_reussie
