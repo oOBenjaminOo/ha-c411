@@ -5,6 +5,7 @@
     "@oOBenjaminOo"
   ],
   "config_flow": true,
+  "dependencies": ["frontend"],
   "documentation": "https://github.com/oOBenjaminOo/ha-c411",
   "integration_type": "service",
   "iot_class": "cloud_polling",
