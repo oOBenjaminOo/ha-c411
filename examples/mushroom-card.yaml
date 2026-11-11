@@ -50,16 +50,32 @@ cards:
       [[[ return 'Niveau ' + (states['sensor.c411_niveau']?.state ?? '?') + ' -
       ' + (states['sensor.c411_rang']?.state ?? 'Indisponible'); ]]]
     tap_action:
-      action: url
-      url_path: https://c411.org/
+      action: none
+    extra_styles: |
+      #details_panel { display: none; }
+      ha-card:has(details.c411-disclosure[open]) #details_panel { display: block; }
+      .c411-disclosure summary {
+        list-style: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: 1px solid var(--divider-color);
+        border-radius: 12px;
+        padding: 3px 7px;
+        font-size: 11px;
+        font-weight: 600;
+      }
+      .c411-disclosure summary::-webkit-details-marker { display: none; }
+      .c411-disclosure[open] ha-icon { transform: rotate(180deg); }
     styles:
       card:
         - padding: 10px 12px
       grid:
         - grid-template-areas: >-
-            "i n zen ." "i l l l" "xp xp xp xp" "stats stats stats stats" "alertes alertes alertes alertes"
+            "i n zen ." "i l l l" "xp xp xp xp" "stats stats stats stats" "alertes alertes alertes alertes" "details_panel details_panel details_panel details_panel"
         - grid-template-columns: 40px auto auto 1fr
-        - grid-template-rows: min-content min-content auto auto auto
+        - grid-template-rows: min-content min-content auto auto auto auto
         - column-gap: 12px
         - row-gap: 3px
       img_cell:
@@ -93,6 +109,10 @@ cards:
         alertes:
           - width: 100%
           - text-align: left
+        details_panel:
+          - width: 100%
+          - min-width: 0
+          - padding-top: 4px
     custom_fields:
       zen: >-
         [[[ const z = states['sensor.c411_zen']?.state; const n = z &&
@@ -247,7 +267,7 @@ cards:
                   - white-space: nowrap
       alertes: >-
         [[[
-          const badge = (icon, label, state, color) => `
+          const badge = (icon, label, state, color) => html`
             <span title="${label} : ${state}" style="display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid currentColor;border-radius:12px;color:${color};font-size:11px;font-weight:600">
               <ha-icon icon="${icon}" style="--mdc-icon-size:14px"></ha-icon>
               <span>${label} · ${state}</span>
@@ -273,5 +293,78 @@ cards:
             const detail = reason === 'insufficient_balance' ? ' (solde insuffisant)' : '';
             badges.push(badge('mdi:download-off-outline', 'Téléchargement', `bloqué${detail}`, '#f87171'));
           }
-          return `<div style="display:flex;flex-wrap:wrap;gap:6px;">${badges.join('')}</div>`;
+          const toggle = event => {
+            event.preventDefault();
+            event.stopPropagation();
+            const disclosure = event.currentTarget.parentElement;
+            disclosure.open = !disclosure.open;
+          };
+          const keepKeyLocal = event => event.stopPropagation();
+          return html`<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+            ${badges}<details class="c411-disclosure"><summary @click=${toggle}
+            @keydown=${keepKeyLocal}><ha-icon icon="mdi:chevron-down"
+            style="--mdc-icon-size:14px"></ha-icon>Détails</summary></details></div>`;
         ]]]
+      details_panel:
+        card:
+          type: vertical-stack
+          cards:
+            - type: heading
+              heading: Détails C411
+              icon: mdi:information-outline
+            - type: grid
+              columns: 2
+              square: false
+              cards:
+                - type: custom:mushroom-template-card
+                  entity: sensor.c411_zen_gagnes
+                  primary: Zen gagnés
+                  secondary: >-
+                    {{ states(entity) if has_value(entity) else 'Indisponible' }}
+                  icon: mdi:plus-circle-outline
+                  tap_action:
+                    action: more-info
+                - type: custom:mushroom-template-card
+                  entity: sensor.c411_zen_depenses
+                  primary: Zen dépensés
+                  secondary: >-
+                    {{ states(entity) if has_value(entity) else 'Indisponible' }}
+                  icon: mdi:minus-circle-outline
+                  tap_action:
+                    action: more-info
+                - type: custom:mushroom-template-card
+                  entity: sensor.c411_envoye_reel
+                  primary: Envoyé hors crédits
+                  secondary: >-
+                    {% set bytes = state_attr(entity, 'bytes') %}
+                    {% set large = bytes is number and bytes >= 1099511627776 %}
+                    {{ ('%.2f' | format(bytes / (1099511627776 if large else 1073741824)) | replace('.', ',')) ~ (' To' if large else ' Go') if has_value(entity) and bytes is number else 'Indisponible' }}
+                  icon: mdi:upload
+                  tap_action:
+                    action: more-info
+                - type: custom:mushroom-template-card
+                  entity: sensor.c411_telecharge_reel
+                  primary: Téléchargé hors crédits
+                  secondary: >-
+                    {% set bytes = state_attr(entity, 'bytes') %}
+                    {% set large = bytes is number and bytes >= 1099511627776 %}
+                    {{ ('%.2f' | format(bytes / (1099511627776 if large else 1073741824)) | replace('.', ',')) ~ (' To' if large else ' Go') if has_value(entity) and bytes is number else 'Indisponible' }}
+                  icon: mdi:download
+                  tap_action:
+                    action: more-info
+                - type: custom:mushroom-template-card
+                  entity: sensor.c411_equipe
+                  primary: Équipe
+                  secondary: >-
+                    {{ states(entity) if has_value(entity) else 'Sans équipe' if state_attr(entity, 'no_team') == true else 'Indisponible' }}
+                  icon: mdi:account-group-outline
+                  tap_action:
+                    action: more-info
+                - type: custom:mushroom-template-card
+                  entity: sensor.c411_quetes_terminees
+                  primary: Quêtes terminées
+                  secondary: >-
+                    {{ states(entity) if has_value(entity) else 'Indisponible' }}
+                  icon: mdi:clipboard-check-outline
+                  tap_action:
+                    action: more-info

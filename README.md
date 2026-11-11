@@ -46,3 +46,5 @@ L’[exemple d’automatisation](examples/profile-alerts.yaml) crée une notific
 La [carte de détails facultative](examples/profile-details-card.yaml) présente les Zen gagnés et dépensés, les volumes hors crédits, l’équipe et les quêtes terminées. Adaptez ses identifiants à ceux de votre service C411.
 
 L’action `c411.generate_card` renvoie la carte principale dans `yaml` et la carte de détails dans `details_yaml`. Les deux cartes utilisent les identifiants du service choisi.
+
+La carte principale intègre un bouton **Détails** à côté des badges. Il ouvre ou referme les statistiques supplémentaires dans la carte. La variante séparée reste disponible dans `details_yaml`.

@@ -51,7 +51,10 @@ def async_register_dashboard_action(hass: HomeAssistant) -> None:
         if missing:
             raise HomeAssistantError(f"C411 card sensors missing or disabled: {', '.join(missing)}")
         template = await hass.async_add_executor_job(TEMPLATE.read_text, "utf-8")
-        yaml = PLACEHOLDER.sub(lambda match: ids[CARD_ENTITIES[match[1]]], template)
+        card_entities = CARD_ENTITIES | DETAIL_ENTITIES
+        yaml = PLACEHOLDER.sub(
+            lambda match: ids.get(card_entities[match[1]], match[0]), template
+        )
         details = await hass.async_add_executor_job(
             TEMPLATE.with_name("profile-details-card.yaml").read_text, "utf-8"
         )
