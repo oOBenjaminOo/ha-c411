@@ -21,3 +21,12 @@ La carte indique en orange une marge positive inférieure à 10 Go et en rouge u
 ## Données
 
 Le ratio utilise les volumes comptabilisés par C411, crédits compris. Il est indéterminé lorsque le total téléchargé est nul. La marge est estimée avec un seuil de ratio de 0,8. Les statuts Freeleech et téléchargement proviennent directement de l’API.
+
+### États et compteurs supplémentaires
+
+- **Freeleech** indique si l’API signale un Freeleech actif pour le profil (personnel, campagne ou fenêtre). Le capteur peut servir à notifier le début et la fin d’une période.
+- **Téléchargement autorisé** reflète la décision de C411 pour le compte, par exemple en fonction du solde de téléchargement. Il ne mesure pas l’état du client BitTorrent.
+- **SilverLeech** reflète le booléen distinct communiqué par l’API.
+- Les compteurs supplémentaires exposent les XP totaux et restants, les Zen gagnés et dépensés, les volumes réellement transférés hors crédits, l’équipe et les quêtes terminées. Les champs absents ne sont pas interprétés comme des zéros.
+
+Les identifiants de la carte sont des exemples. Home Assistant peut inclure le nom du service et celui de la zone dans les identifiants, comme dans `sensor.systeme_c411_mon_pseudo_ratio`.

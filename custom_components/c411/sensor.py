@@ -7,6 +7,8 @@ from homeassistant.const import UnitOfInformation
 
 from .entity import C411Entity, value_at
 
+DATA_SIZE = {"uploaded", "downloaded", "margin", "uploaded_actual", "downloaded_actual"}
+
 METRICS = {
     "profile": ("utilisateur", ("username",)),
     "level": ("niveau", ("level", "level")),
@@ -16,6 +18,14 @@ METRICS = {
     "downloaded": ("telecharge", ("transfer", "downloaded", "total")),
     "ratio": ("ratio", ()),
     "margin": ("marge_de_telechargement", ()),
+    "xp": ("xp", ("level", "xp")),
+    "xp_remaining": ("xp_restants", ("level", "xpToNextLevel")),
+    "zen_earned": ("zen_gagnes", ("zen", "totalEarned")),
+    "zen_spent": ("zen_depenses", ("zen", "totalSpent")),
+    "uploaded_actual": ("envoye_reel", ("transfer", "uploaded", "actual")),
+    "downloaded_actual": ("telecharge_reel", ("transfer", "downloaded", "actual")),
+    "team": ("equipe", ("team", "name")),
+    "quests_completed": ("quetes_terminees", ("class", "progress", "questsCompleted")),
 }
 
 
@@ -34,11 +44,11 @@ class C411Sensor(C411Entity, SensorEntity):
         super().__init__(coordinator, key, object_id)
         self._key = key
         self._path = path
-        if key in {"uploaded", "downloaded", "margin"}:
+        if key in DATA_SIZE:
             self._attr_device_class = SensorDeviceClass.DATA_SIZE
             self._attr_native_unit_of_measurement = UnitOfInformation.BYTES
             self._attr_suggested_unit_of_measurement = UnitOfInformation.GIBIBYTES
-        if key not in {"profile", "rank"}:
+        if key not in {"profile", "rank", "team"}:
             self._attr_state_class = SensorStateClass.MEASUREMENT
 
     @property
@@ -63,7 +73,10 @@ class C411Sensor(C411Entity, SensorEntity):
                 return sent / received if received > 0 else None
             # C411's minimum ratio is 0.8. Keep negative margin visible.
             return sent * 5 // 4 - received
-        return value_at(profile, *self._path)
+        value = value_at(profile, *self._path)
+        if self._key in {"profile", "team"}:
+            return value if isinstance(value, str) and value else None
+        return value if type(value) is int else None
 
     @property
     def entity_picture(self):
@@ -78,7 +91,7 @@ class C411Sensor(C411Entity, SensorEntity):
 
     @property
     def extra_state_attributes(self):
-        if self._key in {"uploaded", "downloaded", "margin"}:
+        if self._key in DATA_SIZE:
             return {"bytes": self.native_value}
         if self._key != "profile":
             return None

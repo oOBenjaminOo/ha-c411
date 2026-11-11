@@ -50,6 +50,30 @@
       },
       "margin": {
         "name": "Download margin"
+      },
+      "xp": {
+        "name": "Total XP"
+      },
+      "xp_remaining": {
+        "name": "XP until next level"
+      },
+      "zen_earned": {
+        "name": "Zen earned"
+      },
+      "zen_spent": {
+        "name": "Zen spent"
+      },
+      "uploaded_actual": {
+        "name": "Actual upload"
+      },
+      "downloaded_actual": {
+        "name": "Actual download"
+      },
+      "team": {
+        "name": "Team"
+      },
+      "quests_completed": {
+        "name": "Completed quests"
       }
     },
     "binary_sensor": {
@@ -58,6 +82,9 @@
       },
       "download_allowed": {
         "name": "Download allowed"
+      },
+      "silverleech": {
+        "name": "SilverLeech"
       }
     }
   }

@@ -6,13 +6,14 @@ from .entity import C411Entity, value_at
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
-    """Register the two profile conditions."""
+    """Register the profile conditions."""
     async_add_entities(
         [
             C411BinarySensor(entry.runtime_data, "freeleech", "freeleech", ("freeleech", "active")),
             C411BinarySensor(
                 entry.runtime_data, "download_allowed", "telechargement_autorise", ("download", "allowed")
             ),
+            C411BinarySensor(entry.runtime_data, "silverleech", "silverleech", ("silverLeech",)),
         ]
     )
 
