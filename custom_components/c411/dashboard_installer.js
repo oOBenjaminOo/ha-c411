@@ -32,19 +32,80 @@ function addCard(config, index, section, card) {
 async function openWizard(hass, deviceId, opener) {
   const dialog = document.createElement("dialog");
   dialog.setAttribute("aria-labelledby", "c411-dashboard-title");
-  dialog.style.cssText = "color:var(--primary-text-color);background:var(--card-background-color);border:1px solid var(--divider-color);border-radius:16px;padding:24px;width:min(420px,calc(100% - 48px));box-sizing:border-box";
-  dialog.innerHTML = `<h2 id="c411-dashboard-title">Ajouter à un dashboard</h2>
-    <form style="display:grid;gap:12px">
+  dialog.className = "c411-dashboard-dialog";
+  dialog.innerHTML = `<style>
+    .c411-dashboard-dialog {
+      color-scheme: light dark;
+      color: var(--primary-text-color);
+      background: var(--card-background-color, var(--primary-background-color));
+      border: 1px solid var(--divider-color);
+      border-radius: var(--ha-dialog-border-radius, 24px);
+      box-shadow: var(--ha-card-box-shadow, 0 16px 48px #0005);
+      box-sizing: border-box;
+      width: min(480px, calc(100% - 32px));
+      max-height: calc(100% - 32px);
+      padding: 0;
+      font-family: var(--paper-font-body1_-_font-family, Roboto, sans-serif);
+    }
+    .c411-dashboard-dialog::backdrop { background: #0008; }
+    .c411-dashboard-dialog h2 {
+      margin: 0;
+      padding: 20px 24px 16px;
+      font-size: 22px;
+      font-weight: 500;
+      border-bottom: 1px solid var(--divider-color);
+    }
+    .c411-dashboard-dialog form { display: grid; gap: 16px; padding: 20px 24px; }
+    .c411-dashboard-dialog label { display: grid; gap: 6px; font-size: 14px; font-weight: 500; }
+    .c411-dashboard-dialog label[hidden], .c411-dashboard-dialog [role=status]:empty { display: none; }
+    .c411-dashboard-dialog select {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--divider-color);
+      border-radius: 12px;
+      padding: 0 12px;
+      background: var(--secondary-background-color);
+      color: var(--primary-text-color);
+      font: inherit;
+    }
+    .c411-dashboard-dialog select:focus-visible, .c411-dashboard-dialog button:focus-visible {
+      outline: 2px solid var(--primary-color);
+      outline-offset: 2px;
+    }
+    .c411-dashboard-dialog [role=status] { margin: 0; color: var(--secondary-text-color); font-size: 14px; }
+    .c411-dashboard-dialog a { color: var(--primary-color); }
+    .c411-dashboard-actions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .c411-dashboard-actions button {
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 24px;
+      border: 1px solid var(--divider-color);
+      background: transparent;
+      color: var(--primary-text-color);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .c411-dashboard-actions button[type=submit] {
+      border-color: transparent;
+      background: var(--primary-color);
+      color: var(--text-primary-color, white);
+    }
+    .c411-dashboard-dialog :disabled { opacity: .55; cursor: default; }
+  </style>
+    <h2 id="c411-dashboard-title">Ajouter à un dashboard</h2>
+    <form>
       <label>Tableau de bord <select name="dashboard" required disabled></select></label>
       <label>Vue <select name="view" required disabled></select></label>
       <label hidden>Section <select name="section"></select></label>
-      <p role="status" style="margin:0"></p>
-      <div style="display:flex;justify-content:flex-end;gap:8px">
+      <p role="status"></p>
+      <div class="c411-dashboard-actions">
         <button type="button" name="cancel">Annuler</button>
         <button type="submit" name="install" disabled>Ajouter la carte</button>
       </div>
     </form>`;
-  document.body.append(dialog);
+  opener.getRootNode().append(dialog);
   dialog.addEventListener("close", () => { dialog.remove(); opener.focus(); }, { once: true });
   dialog.showModal();
 
