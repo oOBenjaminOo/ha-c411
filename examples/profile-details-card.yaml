@@ -1,0 +1,17 @@
+# Adaptez les identifiants à votre service C411.
+type: entities
+title: Détails C411
+show_header_toggle: false
+entities:
+  - entity: sensor.c411_zen_gagnes
+    name: Zen gagnés
+  - entity: sensor.c411_zen_depenses
+    name: Zen dépensés
+  - entity: sensor.c411_envoye_reel
+    name: Envoyé hors crédits
+  - entity: sensor.c411_telecharge_reel
+    name: Téléchargé hors crédits
+  - entity: sensor.c411_equipe
+    name: Équipe
+  - entity: sensor.c411_quetes_terminees
+    name: Quêtes terminées

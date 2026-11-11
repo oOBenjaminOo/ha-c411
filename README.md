@@ -42,3 +42,5 @@ Le capteur de diagnostic **Dernière synchronisation réussie** donne l'heure de
 La [carte native](examples/native-card.yaml) utilise uniquement les cartes Markdown et Entités de Home Assistant. Collez son YAML dans une carte **Manuel** et remplacez les identifiants par ceux de votre service C411.
 
 L’[exemple d’automatisation](examples/profile-alerts.yaml) crée une notification persistante au début d’un Freeleech ou quand C411 retire l’autorisation de télécharger. Adaptez les deux identifiants avant de l’activer.
+
+La [carte de détails facultative](examples/profile-details-card.yaml) présente les Zen gagnés et dépensés, les volumes hors crédits, l’équipe et les quêtes terminées. Adaptez ses identifiants à ceux de votre service C411.
