@@ -13,6 +13,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .api import InvalidKey, ProfileError, fetch_profile
 from .dashboard import async_register_dashboard_action
+from .dashboard_installer import async_register_dashboard_installer
 
 DOMAIN = "c411"
 PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
@@ -21,6 +22,7 @@ PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     """Register the dashboard action."""
     async_register_dashboard_action(hass)
+    await async_register_dashboard_installer(hass)
     return True
 
 
