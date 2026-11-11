@@ -1,5 +1,10 @@
 # Changelog
 
+## À venir
+
+- Liens vers le profil C411 depuis l’avatar et le pseudo, et vers la boutique depuis le solde Zen.
+- Ajout de la licence MIT.
+
 ## 0.3.5
 
 - Affichage de la dernière synchronisation réussie dans les détails intégrés et dans la carte de détails séparée.

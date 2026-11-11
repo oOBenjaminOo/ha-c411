@@ -73,3 +73,7 @@ La carte principale intègre un bouton **Détails** à côté des badges. Il ouv
 ## Historique des versions
 
 Voir le [changelog](CHANGELOG.md).
+
+## Licence
+
+Ce projet est distribué sous [licence MIT](LICENSE).
