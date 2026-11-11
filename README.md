@@ -4,11 +4,26 @@ Cette intégration lit le profil C411 toutes les cinq minutes. Elle expose le ps
 
 ## Installation via HACS
 
-1. Dans HACS, ouvrez **⋮ → Dépôts personnalisés**.
+Home Assistant 2026.7.0 ou ultérieur et HACS sont requis pour cette procédure.
+
+### 1. Catalogue HACS
+
+1. Dans **HACS**, recherchez **C411** parmi les intégrations.
+2. Ouvrez **C411**, puis cliquez sur **Télécharger**.
+3. Redémarrez Home Assistant et passez à la configuration du compte.
+
+Tant que C411 n’apparaît pas dans le catalogue officiel, utilisez la méthode suivante.
+
+### 2. Dépôt personnalisé
+
+1. Dans **HACS**, ouvrez **⋮ → Dépôts personnalisés**.
 2. Ajoutez `https://github.com/oOBenjaminOo/ha-c411` dans la catégorie **Intégration**.
-3. Téléchargez **C411**, puis redémarrez Home Assistant.
-4. Dans [les intégrations C411](https://c411.org/user/integrations), créez une clé API avec **Profil (lecture)**.
-5. Dans Home Assistant, ouvrez **Paramètres → Appareils et services → Ajouter une intégration → C411**. Collez la clé.
+3. Ouvrez **C411** dans HACS, cliquez sur **Télécharger**, puis redémarrez Home Assistant.
+
+### Configurer le compte
+
+1. Dans [les intégrations C411](https://c411.org/user/integrations), créez une clé API avec **Profil (lecture)**.
+2. Dans Home Assistant, ouvrez **Paramètres → Appareils et services → Ajouter une intégration → C411**, puis collez la clé.
 
 Si C411 révoque la clé, Home Assistant demande de la remplacer. Une clé destinée à Torznab peut ne pas disposer de la permission Profil (lecture).
 
@@ -16,7 +31,7 @@ Si C411 révoque la clé, Home Assistant demande de la remplacer. Une clé desti
 
 Installez **Mushroom** et **Button Card** via HACS. Dans votre tableau de bord, ajoutez une carte **Manuel**, puis collez le contenu de [mushroom-card.yaml](examples/mushroom-card.yaml). Si vos identifiants diffèrent, utilisez ceux affichés dans la liste des entités de l’intégration.
 
-La carte indique en orange une marge positive inférieure à 10 Go et en rouge une marge nulle ou négative. Les volumes sont affichés en Go ou en To selon leur taille, avec des conversions binaires. Les entités restent utilisables dans les cartes natives de Home Assistant.
+Les volumes sont affichés en Go ou en To selon leur taille, avec des conversions binaires. Les entités restent utilisables dans les cartes natives de Home Assistant.
 
 ## Données
 
@@ -47,4 +62,8 @@ La [carte de détails facultative](examples/profile-details-card.yaml) présente
 
 L’action `c411.generate_card` renvoie la carte principale dans `yaml` et la carte de détails dans `details_yaml`. Les deux cartes utilisent les identifiants du service choisi.
 
-La carte principale intègre un bouton **Détails** à côté des badges. Il ouvre ou referme les statistiques supplémentaires dans la carte. La variante séparée reste disponible dans `details_yaml`.
+La carte principale intègre un bouton **Détails** à côté des badges. Il ouvre ou referme les statistiques supplémentaires dans la carte. L’heure locale de la dernière synchronisation réussie apparaît en bas du panneau ouvert. La variante séparée reste disponible dans `details_yaml`.
+
+## Historique des versions
+
+Voir le [changelog](CHANGELOG.md).

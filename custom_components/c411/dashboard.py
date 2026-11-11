@@ -31,6 +31,7 @@ DETAIL_ENTITIES = {
     "telecharge_reel": "downloaded_actual",
     "equipe": "team",
     "quetes_terminees": "quests_completed",
+    "derniere_synchronisation_reussie": "last_sync",
 }
 PLACEHOLDER = re.compile(r"\b(?:binary_)?sensor\.c411_([a-z_]+)\b")
 

@@ -60,3 +60,13 @@ cards:
         icon: mdi:clipboard-check-outline
         tap_action:
           action: more-info
+  - type: custom:mushroom-template-card
+    entity: sensor.c411_derniere_synchronisation_reussie
+    primary: Dernière synchronisation réussie
+    secondary: >-
+      {% set stamp = as_timestamp(states(entity), none) %}
+      {{ stamp | timestamp_custom('%d/%m/%Y à %H:%M', true)
+         if stamp is not none else 'Indisponible' }}
+    icon: mdi:clock-check-outline
+    tap_action:
+      action: more-info
