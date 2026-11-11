@@ -36,6 +36,9 @@ cards:
       - sensor.c411_zen
       - sensor.c411_niveau
       - sensor.c411_rang
+      - binary_sensor.c411_freeleech
+      - binary_sensor.c411_silverleech
+      - binary_sensor.c411_telechargement_autorise
     name: >-
       [[[ return entity && !['unknown','unavailable'].includes(entity.state) ?
       entity.state : 'Profil indisponible'; ]]]
@@ -82,10 +85,7 @@ cards:
           - text-align: left
         alertes:
           - width: 100%
-          - display: >-
-              [[[ return entity?.attributes?.freeleech?.active ||
-              entity?.attributes?.download?.allowed === false ? 'block' :
-              'none'; ]]]
+          - text-align: left
     custom_fields:
       zen: >-
         [[[ const z = states['sensor.c411_zen']?.state; const n = z &&
@@ -112,19 +112,26 @@ cards:
         remaining.toLocaleString('fr-FR') + ' XP avant le niveau ' + next +
         '</span></div></div>'; ]]]
       alertes: >-
-        [[[ const a = entity?.attributes || {}; const badges = []; const pill =
-        (txt, color) => '<span
-        style="display:inline-flex;align-items:center;border-radius:12px;padding:3px
-        9px;font-size:11px;font-weight:600;color:' + color + ';border:1px solid
-        ' + color + '">' + txt + '</span>'; if (a.freeleech?.active) { const
-        sources = (a.freeleech.sources || []).map(s => ({personal:'personnel',
-        campaign:'événement', window:'créneau'})[s]).filter(Boolean).join(', ');
-        badges.push(pill('Freeleech actif' + (sources ? ' - ' + sources : ''),
-        '#34d399')); } if (a.download?.allowed === false)
-        badges.push(pill('Téléchargement bloqué', '#f87171')); return
-        badges.length ? '<div
-        style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">' +
-        badges.join('') + '</div>' : ''; ]]]
+        [[[
+          const badge = (icon, label, state, color) => `
+            <span title="${label} : ${state}" style="display:inline-flex;align-items:center;gap:4px;padding:3px 7px;border:1px solid currentColor;border-radius:12px;color:${color};font-size:11px;font-weight:600">
+              <ha-icon icon="${icon}" style="--mdc-icon-size:14px"></ha-icon>
+              <span>${label} · ${state}</span>
+            </span>`;
+          const muted = 'var(--secondary-text-color)';
+          const status = (id, icon, label, color) => {
+            const value = states[id]?.state;
+            return badge(icon, label, value === 'on' ? 'actif' : value === 'off' ? 'inactif' : 'indisponible',
+              value === 'on' ? color : muted);
+          };
+          const download = states['binary_sensor.c411_telechargement_autorise']?.state;
+          const badges = [
+            status('binary_sensor.c411_freeleech', 'mdi:lightning-bolt', 'Freeleech', '#f87171'),
+            status('binary_sensor.c411_silverleech', 'mdi:lightning-bolt', 'SilverLeech', '#22d3ee')
+          ];
+          if (download === 'off') badges.push(badge('mdi:download-off-outline', 'Téléchargement', 'bloqué', '#f87171'));
+          return `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">${badges.join('')}</div>`;
+        ]]]
   - type: grid
     columns: 2
     square: false
@@ -138,7 +145,7 @@ cards:
           {% set divisor = 1099511627776 if unit == 'To' else 1073741824 %}
           {{ ('%.2f' | format(bytes / divisor) | replace('.', ',')) ~ ' ' ~ unit
              if has_value(entity) and bytes is number else 'Indisponible' }}
-        icon: mdi:download-box-outline
+        picture: data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cdefs%3E%3CclipPath%20id%3D%22dl-fill-v-0-0-2%22%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%3E%3C%2Fpath%3E%3C%2FclipPath%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.12%22%3E%3C%2Fpath%3E%3Crect%20x%3D%220%22%20y%3D%225.392423135587444%22%20width%3D%2224%22%20height%3D%2218.607576864412557%22%20fill%3D%22%2334d399%22%20fill-opacity%3D%220.85%22%20clip-path%3D%22url(%23dl-fill-v-0-0-2)%22%3E%3C%2Frect%3E%3Cpath%20d%3D%22M9.25%203.5h5.5a1%201%200%200%201%201%201v6.75h3.1a.75.75%200%200%201%20.53%201.28l-6.85%206.85a.75.75%200%200%201-1.06%200l-6.85-6.85a.75.75%200%200%201%20.53-1.28h3.1V4.5a1%201%200%200%201%201-1Z%22%20fill%3D%22none%22%20stroke%3D%22%2334d399%22%20stroke-width%3D%221.5%22%20stroke-linejoin%3D%22round%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E
         color: >-
           {% set bytes = state_attr(entity, 'bytes') %}
           {{ 'grey' if not has_value(entity) or bytes is not number else

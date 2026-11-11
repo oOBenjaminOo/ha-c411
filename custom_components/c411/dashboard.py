@@ -20,8 +20,11 @@ CARD_ENTITIES = {
     "marge_de_telechargement": "margin",
     "envoye": "uploaded",
     "telecharge": "downloaded",
+    "freeleech": "freeleech",
+    "silverleech": "silverleech",
+    "telechargement_autorise": "download_allowed",
 }
-PLACEHOLDER = re.compile(r"\bsensor\.c411_([a-z_]+)\b")
+PLACEHOLDER = re.compile(r"\b(?:binary_)?sensor\.c411_([a-z_]+)\b")
 
 
 def async_register_dashboard_action(hass: HomeAssistant) -> None:
@@ -33,7 +36,7 @@ def async_register_dashboard_action(hass: HomeAssistant) -> None:
         ids = {
             entry.unique_id.partition("_")[2]: entry.entity_id
             for entry in entries
-            if entry.platform == DOMAIN and entry.domain == "sensor" and not entry.disabled
+            if entry.platform == DOMAIN and entry.domain in {"sensor", "binary_sensor"} and not entry.disabled
         }
         missing = sorted(set(CARD_ENTITIES.values()) - ids.keys())
         if missing:
