@@ -1,6 +1,6 @@
 # Exemple issu du tableau de bord C411.
 # Dépendances frontend : Mushroom et Button Card (HACS).
-# Utilise les entités et attributs de la configuration C411 historique.
+# Utilise les entités et attributs de la intégration C411.
 # Les identifiants peuvent être adaptés dans l’éditeur de carte.
 type: vertical-stack
 cards:
@@ -27,10 +27,15 @@ cards:
   - type: custom:button-card
     entity: sensor.c411_utilisateur
     show_entity_picture: true
+    icon: mdi:account-circle
     entity_picture: >-
       [[[ return entity?.attributes?.entity_picture || ''; ]]]
     show_name: true
     show_label: true
+    triggers_update:
+      - sensor.c411_zen
+      - sensor.c411_niveau
+      - sensor.c411_rang
     name: >-
       [[[ return entity && !['unknown','unavailable'].includes(entity.state) ?
       entity.state : 'Profil indisponible'; ]]]
@@ -128,22 +133,27 @@ cards:
         entity: sensor.c411_marge_de_telechargement
         primary: Marge de téléchargement
         secondary: >-
-          {{ states('sensor.c411_marge_de_telechargement') | replace('.', ',') ~
-          ' To' if has_value('sensor.c411_marge_de_telechargement') else
-          'Indisponible' }}
+          {% set bytes = state_attr(entity, 'bytes') %}
+          {% set unit = 'To' if bytes is number and bytes | abs >= 1099511627776 else 'Go' %}
+          {% set divisor = 1099511627776 if unit == 'To' else 1073741824 %}
+          {{ ('%.2f' | format(bytes / divisor) | replace('.', ',')) ~ ' ' ~ unit
+             if has_value(entity) and bytes is number else 'Indisponible' }}
         icon: mdi:download-box-outline
-        color: green
+        color: >-
+          {% set bytes = state_attr(entity, 'bytes') %}
+          {{ 'grey' if not has_value(entity) or bytes is not number else
+             'red' if bytes <= 0 else 'amber' if bytes < 10737418240 else 'green' }}
         tap_action:
           action: more-info
       - type: custom:mushroom-template-card
         entity: sensor.c411_ratio
         primary: Ratio
         secondary: >-
-          {{ ('%.2f' | format(states('sensor.c411_ratio') | float) |
-          replace('.', ',')) if has_value('sensor.c411_ratio') else
-          'Indisponible' }}
+          {{ ('%.2f' | format(states(entity) | float) | replace('.', ','))
+             if has_value(entity) else 'Indisponible' }}
         icon: mdi:swap-vertical
-        color: '{{ ''green'' if has_value(''sensor.c411_ratio'') else ''red'' }}'
+        color: >-
+          {{ 'grey' if not has_value(entity) else 'red' if states(entity) | float < 0.8 else 'green' }}
         tap_action:
           action: more-info
   - type: grid
@@ -151,25 +161,28 @@ cards:
     square: false
     cards:
       - type: custom:mushroom-template-card
-        entity: sensor.c411_utilisateur
+        entity: sensor.c411_envoye
         primary: Envoyé
         secondary: >-
-          {% set t = state_attr('sensor.c411_utilisateur', 'transfer') %} {{
-          ((t.uploaded.total / 1099511627776) | round(2) | string | replace('.',
-          ',')) ~ ' To' if t else 'Indisponible' }}
+          {% set bytes = state_attr(entity, 'bytes') %}
+          {% set unit = 'To' if bytes is number and bytes >= 1099511627776 else 'Go' %}
+          {% set divisor = 1099511627776 if unit == 'To' else 1073741824 %}
+          {{ ('%.2f' | format(bytes / divisor) | replace('.', ',')) ~ ' ' ~ unit
+             if has_value(entity) and bytes is number else 'Indisponible' }}
         icon: mdi:upload
         color: green
         tap_action:
-          action: none
+          action: more-info
       - type: custom:mushroom-template-card
-        entity: sensor.c411_utilisateur
+        entity: sensor.c411_telecharge
         primary: Téléchargé
         secondary: >-
-          {% set t = state_attr('sensor.c411_utilisateur', 'transfer') %} {{
-          ((t.downloaded.total / 1073741824) | round(1) | string | replace('.',
-          ',')) ~ ' Go' if t else 'Indisponible' }}
+          {% set bytes = state_attr(entity, 'bytes') %}
+          {% set unit = 'To' if bytes is number and bytes >= 1099511627776 else 'Go' %}
+          {% set divisor = 1099511627776 if unit == 'To' else 1073741824 %}
+          {{ ('%.2f' | format(bytes / divisor) | replace('.', ',')) ~ ' ' ~ unit
+             if has_value(entity) and bytes is number else 'Indisponible' }}
         icon: mdi:download
         color: blue
         tap_action:
-          action: none
-
+          action: more-info

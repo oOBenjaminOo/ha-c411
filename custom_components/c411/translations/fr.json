@@ -1,0 +1,64 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Saisissez une clé API C411 avec la permission Profil (lecture).",
+        "data": {
+          "api_key": "Clé API"
+        }
+      },
+      "reauth_confirm": {
+        "description": "Saisissez une clé API C411 avec la permission Profil (lecture).",
+        "data": {
+          "api_key": "Clé API"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Clé API refusée.",
+      "missing_scope": "La clé doit avoir la permission Profil (lecture).",
+      "cannot_connect": "Impossible de lire le profil C411. Réessayez dans une minute."
+    },
+    "abort": {
+      "already_configured": "Ce profil est déjà configuré.",
+      "unique_id_mismatch": "La clé appartient à un autre profil.",
+      "reauth_successful": "La clé a été remplacée."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "profile": {
+        "name": "Utilisateur"
+      },
+      "level": {
+        "name": "Niveau"
+      },
+      "rank": {
+        "name": "Rang"
+      },
+      "zen": {
+        "name": "Zen"
+      },
+      "uploaded": {
+        "name": "Envoyé"
+      },
+      "downloaded": {
+        "name": "Téléchargé"
+      },
+      "ratio": {
+        "name": "Ratio"
+      },
+      "margin": {
+        "name": "Marge de téléchargement"
+      }
+    },
+    "binary_sensor": {
+      "freeleech": {
+        "name": "Freeleech"
+      },
+      "download_allowed": {
+        "name": "Téléchargement autorisé"
+      }
+    }
+  }
+}

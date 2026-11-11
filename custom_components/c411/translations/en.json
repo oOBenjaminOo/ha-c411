@@ -1,0 +1,64 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "Enter a C411 API key with the Profile (read) permission.",
+        "data": {
+          "api_key": "API key"
+        }
+      },
+      "reauth_confirm": {
+        "description": "Enter a C411 API key with the Profile (read) permission.",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid API key.",
+      "missing_scope": "The API key needs the Profile (read) permission.",
+      "cannot_connect": "Could not read the C411 profile. Try again in a minute."
+    },
+    "abort": {
+      "already_configured": "This profile is already configured.",
+      "unique_id_mismatch": "The key belongs to another profile.",
+      "reauth_successful": "The key was updated."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "profile": {
+        "name": "User"
+      },
+      "level": {
+        "name": "Level"
+      },
+      "rank": {
+        "name": "Rank"
+      },
+      "zen": {
+        "name": "Zen"
+      },
+      "uploaded": {
+        "name": "Uploaded"
+      },
+      "downloaded": {
+        "name": "Downloaded"
+      },
+      "ratio": {
+        "name": "Ratio"
+      },
+      "margin": {
+        "name": "Download margin"
+      }
+    },
+    "binary_sensor": {
+      "freeleech": {
+        "name": "Freeleech"
+      },
+      "download_allowed": {
+        "name": "Download allowed"
+      }
+    }
+  }
+}
