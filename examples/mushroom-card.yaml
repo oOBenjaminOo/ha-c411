@@ -1,0 +1,175 @@
+# Exemple issu du tableau de bord C411.
+# Dépendances frontend : Mushroom et Button Card (HACS).
+# Utilise les entités et attributs de la configuration C411 historique.
+# Les identifiants peuvent être adaptés dans l’éditeur de carte.
+type: vertical-stack
+cards:
+  - type: custom:button-card
+    show_name: false
+    show_state: false
+    show_entity_picture: true
+    entity_picture: https://c411.org/images/logo-md.png
+    tap_action:
+      action: url
+      url_path: https://c411.org/
+    styles:
+      card:
+        - background: none
+        - border: none
+        - box-shadow: none
+        - padding: 12px 0 8px
+      img_cell:
+        - height: 56px
+      entity_picture:
+        - width: 140px
+        - max-height: 56px
+        - object-fit: contain
+  - type: custom:button-card
+    entity: sensor.c411_utilisateur
+    show_entity_picture: true
+    entity_picture: >-
+      [[[ return entity?.attributes?.entity_picture || ''; ]]]
+    show_name: true
+    show_label: true
+    name: >-
+      [[[ return entity && !['unknown','unavailable'].includes(entity.state) ?
+      entity.state : 'Profil indisponible'; ]]]
+    label: >-
+      [[[ return 'Niveau ' + (states['sensor.c411_niveau']?.state ?? '?') + ' -
+      ' + (states['sensor.c411_rang']?.state ?? 'Indisponible'); ]]]
+    tap_action:
+      action: url
+      url_path: https://c411.org/
+    styles:
+      card:
+        - padding: 10px 12px
+      grid:
+        - grid-template-areas: >-
+            "i n zen ." "i l l l" "xp xp xp xp" "alertes alertes alertes
+            alertes"
+        - grid-template-columns: 40px auto auto 1fr
+        - grid-template-rows: min-content min-content auto auto
+        - column-gap: 12px
+        - row-gap: 3px
+      img_cell:
+        - width: 40px
+        - height: 40px
+      entity_picture:
+        - width: 40px
+        - height: 40px
+        - border-radius: 50%
+        - object-fit: cover
+      name:
+        - justify-self: start
+        - font-size: 14px
+        - font-weight: 600
+      label:
+        - justify-self: start
+        - font-size: 12px
+        - color: var(--secondary-text-color)
+      custom_fields:
+        zen:
+          - justify-self: start
+          - font-size: 14px
+          - font-weight: 600
+        xp:
+          - width: 100%
+          - text-align: left
+        alertes:
+          - width: 100%
+          - display: >-
+              [[[ return entity?.attributes?.freeleech?.active ||
+              entity?.attributes?.download?.allowed === false ? 'block' :
+              'none'; ]]]
+    custom_fields:
+      zen: >-
+        [[[ const z = states['sensor.c411_zen']?.state; const n = z &&
+        !['unknown', 'unavailable'].includes(z) ?
+        Number(z).toLocaleString('fr-FR') : '?'; return '<span
+        style="display:inline-flex;align-items:center;gap:5px;white-space:nowrap"><span
+        style="margin-right:3px">-</span>' + n + '<img
+        src="https://c411.org/images/tokenization/zen.svg" alt="Zen"
+        style="width:22px;height:22px;object-fit:contain"></span>'; ]]]
+      xp: >-
+        [[[ const l = entity?.attributes?.level; if (!l) return ''; const into =
+        Number(l.xpIntoLevel) || 0; const remaining = Math.max(0,
+        Number(l.xpToNextLevel) || 0); const total = into + remaining; const p =
+        total ? Math.max(0, Math.min(100, into / total * 100)) : 0; const next =
+        Number(l.level) + 1; return '<div style="margin-top:5px"><div
+        role="progressbar" aria-label="Progression du niveau" aria-valuenow="' +
+        Math.round(p) + '" aria-valuemin="0" aria-valuemax="100"
+        style="height:4px;background:var(--divider-color);border-radius:4px;overflow:hidden"><div
+        style="height:100%;width:' + p +
+        '%;background:#34d399;border-radius:4px"></div></div><div
+        style="display:flex;justify-content:space-between;gap:8px;margin-top:5px;font-size:11px;color:var(--secondary-text-color)"><span>'
+        + Math.round(p) + ' % - ' + into.toLocaleString('fr-FR') + ' / ' +
+        total.toLocaleString('fr-FR') + ' XP</span><span>' +
+        remaining.toLocaleString('fr-FR') + ' XP avant le niveau ' + next +
+        '</span></div></div>'; ]]]
+      alertes: >-
+        [[[ const a = entity?.attributes || {}; const badges = []; const pill =
+        (txt, color) => '<span
+        style="display:inline-flex;align-items:center;border-radius:12px;padding:3px
+        9px;font-size:11px;font-weight:600;color:' + color + ';border:1px solid
+        ' + color + '">' + txt + '</span>'; if (a.freeleech?.active) { const
+        sources = (a.freeleech.sources || []).map(s => ({personal:'personnel',
+        campaign:'événement', window:'créneau'})[s]).filter(Boolean).join(', ');
+        badges.push(pill('Freeleech actif' + (sources ? ' - ' + sources : ''),
+        '#34d399')); } if (a.download?.allowed === false)
+        badges.push(pill('Téléchargement bloqué', '#f87171')); return
+        badges.length ? '<div
+        style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">' +
+        badges.join('') + '</div>' : ''; ]]]
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_marge_de_telechargement
+        primary: Marge de téléchargement
+        secondary: >-
+          {{ states('sensor.c411_marge_de_telechargement') | replace('.', ',') ~
+          ' To' if has_value('sensor.c411_marge_de_telechargement') else
+          'Indisponible' }}
+        icon: mdi:download-box-outline
+        color: green
+        tap_action:
+          action: more-info
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_ratio
+        primary: Ratio
+        secondary: >-
+          {{ ('%.2f' | format(states('sensor.c411_ratio') | float) |
+          replace('.', ',')) if has_value('sensor.c411_ratio') else
+          'Indisponible' }}
+        icon: mdi:swap-vertical
+        color: '{{ ''green'' if has_value(''sensor.c411_ratio'') else ''red'' }}'
+        tap_action:
+          action: more-info
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_utilisateur
+        primary: Envoyé
+        secondary: >-
+          {% set t = state_attr('sensor.c411_utilisateur', 'transfer') %} {{
+          ((t.uploaded.total / 1099511627776) | round(2) | string | replace('.',
+          ',')) ~ ' To' if t else 'Indisponible' }}
+        icon: mdi:upload
+        color: green
+        tap_action:
+          action: none
+      - type: custom:mushroom-template-card
+        entity: sensor.c411_utilisateur
+        primary: Téléchargé
+        secondary: >-
+          {% set t = state_attr('sensor.c411_utilisateur', 'transfer') %} {{
+          ((t.downloaded.total / 1073741824) | round(1) | string | replace('.',
+          ',')) ~ ' Go' if t else 'Indisponible' }}
+        icon: mdi:download
+        color: blue
+        tap_action:
+          action: none
+
