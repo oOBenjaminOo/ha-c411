@@ -49,7 +49,7 @@ async def async_dashboard_card(hass, connection, msg):
             return_response=True,
             context=connection.context(msg),
         )
-        card = yaml.safe_load(generated["yaml"])
+        card = await hass.async_add_executor_job(yaml.safe_load, generated["yaml"])
     except (HomeAssistantError, yaml.YAMLError) as err:
         connection.send_error(msg["id"], "card_unavailable", str(err))
         return
