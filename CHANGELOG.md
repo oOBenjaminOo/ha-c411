@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.7
+
+- Analyse du YAML de la carte dans un exécuteur pour garder la boucle principale de Home Assistant disponible pendant l’ajout à un dashboard, conformément à la remarque de Frenck.
+
 ## 0.3.6
 
 - Ajout du bouton **Ajouter à un dashboard** sur la fiche C411.
